@@ -1,39 +1,50 @@
 #!/bin/bash
 main="$1.c"
-currentyear=`date +"%Y"`
+date=`date +"%m/%d/%Y"`
 user=$(whoami)
 mkdir $1 && cd $1; mkdir src include bin obj
-cat > Makefile << 'EOF'
+cat > Makefile << EOF
 CC=gcc
-CFLAGS=-g -Wall
+CFLAGS=-g -Wall -std=c99
 LIBS=
 SRCDIR=src
 BINDIR=bin
-SRCS=$(wildcard($(SRCDIR)/*.c)
-OBJS=$(patsubst $(SRCDIR)/%%.c, $(OBJDIR)/%%.o, $(SRCS))
-BIN=$(BINDIR)/$1
+OBJDIR=obj
+SRCS=\$(wildcard \$(SRCDIR)/*.c)
+OBJS=\$(patsubst \$(SRCDIR)/%.c, \$(OBJDIR)/%.o, \$(SRCS))
+BIN=\$(BINDIR)/$1
 
-all: $(BIN)
+all: \$(BIN)
 
-$(BIN): $(OBJS)
-	$(CC) $(CFLAGS) -c $< -o $@
+release: CFLAGS=-Wall -O2 -DNDEBUG
+
+\$(BIN): \$(OBJS)
+	\$(CC) \$(CFLAGS) \$(OBJS) -o \$@ \$(LIBS) 
+
+\$(OBJDIR)/%.o: \$(SRCDIR)/%.c
+	\$(CC) \$(CFLAGS) -c \$< -o \$@
 
 .PHONY: clean
 clean:
-	rm $(BINDIR)/*.o
+	rm \$(BINDIR)/*.o
 EOF
 
 cd src && cat > $main << EOF
 /*
- * $main by $user, $currentyear 
+ * $main
+ * Original Author: $user 
+ * Created: $date
  */
 
 #include <stdlib.h>
 #include <stdio.h>
 
+#define _POSIX_C_SOURCE 200809L
+
 int
 main(int argv, char *argc[])
 {
+	printf("Hello World!");
 	return 0;
 }
 EOF
