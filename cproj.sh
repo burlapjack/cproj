@@ -44,7 +44,7 @@ cd src && cat > $main << EOF
 int
 main(int argv, char *argc[])
 {
-	printf("Hello World!");
+	printf("Hello World!\n");
 	return 0;
 }
 EOF
